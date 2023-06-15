@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 data_x = np.linspace(10,20,100)
 data = pd.DataFrame({'x': data_x,#'2x': 2*data_x, 'x2': data_x**2, 'exp(x)': np.exp(data_x), 'sin(x)': np.sin(data_x),
-                     'rand+x': data_x+random_sample(len(data_x)), 'rand+x_1': data_x+random_sample(len(data_x)),
+                     #'rand+x': data_x+random_sample(len(data_x)), 'rand+x_1': data_x+random_sample(len(data_x)),
                      'rand+x_2': data_x+random_sample(len(data_x)),'rand+x_3': data_x+random_sample(len(data_x)),
                      'rand*x': data_x*random_sample(len(data_x)),'rand': random_sample(len(data_x))})
 gauss = GaussianProcessRegressor()
@@ -22,7 +22,8 @@ OBJECTIVE = 'rand+x_3'
 cols = data.columns.drop(OBJECTIVE)
 for i in range(10):
     mod_cols = []
-    for col in cols:
+    fig, ax = plt.subplots(len(cols),1)
+    for i, col in enumerate(cols):
 
         # Split the data into features and target variables
         mod_cols.append(col)
@@ -48,13 +49,17 @@ for i in range(10):
         print(f'For data with columns {mod_cols} and {len(data["x"])} data-------------------')
         print(f'Mean Squared Error: {mse:.4f}\n MSE Scaled: {mse_s:.4f}')
         print(f'R-squared: {r2:.4f}\n R^2 Scaled: {r2_s:.4f}')
-        plt.title(f'Predictions and values for {OBJECTIVE} w/ features {mod_cols} and {len(y_test)} tests', wrap=True)
-        plt.scatter(x_test['x'], y_test, marker='+', label='Real values')
-        plt.scatter(x_test['x'], y_pred, marker='.', label='Predictions')
-        plt.scatter(x_test['x'], y_pred_s, marker='.', label='Predictions scaled')
-        plt.legend()
-        plt.show()
+        
+        #Plotting        
+        ax[i].set_title(f'Predictions and values for {OBJECTIVE} w/ features {mod_cols} and {len(y_test)} tests', wrap=True)
+        ax[i].scatter(x_test['x'], y_test, marker='+', label='Real values')
+        ax[i].scatter(x_test['x'], y_pred, marker='.', label='Predictions')
+        ax[i].scatter(x_test['x'], y_pred_s, marker='.', label='Predictions scaled')
+        ax[i].legend()
+        
+    plt.show()
     eliminate = list({np.random.randint(0,len(data['x'])) for _ in range(len(data['x'])//5)})
 
     data.drop(eliminate, inplace=True)
     data.reset_index(drop=True, inplace=True)
+
